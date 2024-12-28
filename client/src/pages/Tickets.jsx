@@ -58,6 +58,20 @@ const Tickets = () => {
 														{ticket.seats.map((seat) => seat.row + seat.number).join(', ')}
 													</p>
 													<p className="whitespace-nowrap">({ticket.seats.length} seats)</p>
+													<div className="flex gap-x-2">
+														{ticket.showtime.price ? (
+															<>
+																<p className="whitespace-nowrap">Price: ${ticket.showtime.price.toFixed(2)}/ticket</p>
+																{ticket.seats.length > 1 && (
+																	<p className="whitespace-nowrap font-semibold">
+																		Total: ${(ticket.showtime.price * ticket.seats.length).toFixed(2)}
+																	</p>
+																)}
+															</>
+														) : (
+															<p className="whitespace-nowrap">Price not set</p>
+														)}
+													</div>
 												</div>
 											</div>
 										</div>
