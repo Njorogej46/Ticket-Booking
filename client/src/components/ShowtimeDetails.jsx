@@ -194,9 +194,14 @@ const ShowtimeDetails = ({ showDeleteBtn, showtime, fetchShowtime }) => {
 								{showtime?.movie?.name}
 							</h4>
 							{showtime?.movie && (
-								<p className="mr-4 font-medium sm:text-lg">
-									length : {showtime?.movie?.length || '-'} min
-								</p>
+								<>
+									<p className="mr-4 font-medium sm:text-lg">
+										length : {showtime?.movie?.length || '-'} min
+									</p>
+									<p className="mr-4 font-medium sm:text-lg">
+										price : ${showtime?.price || '-'}
+									</p>
+								</>
 							)}
 						</div>
 					</div>

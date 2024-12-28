@@ -95,7 +95,14 @@ const Schedule = () => {
 			showtime.setHours(hours, minutes, 0)
 			const response = await axios.post(
 				'/showtime',
-				{ movie: data.movie, showtime, theater: data.theater, repeat: data.repeat, isRelease: data.isRelease },
+				{ 
+					movie: data.movie, 
+					showtime, 
+					theater: data.theater, 
+					repeat: data.repeat, 
+					isRelease: data.isRelease,
+					price: parseFloat(data.price)
+				},
 				{
 					headers: {
 						Authorization: `Bearer ${auth.token}`
@@ -246,6 +253,20 @@ const Schedule = () => {
 												className="h-9 w-full rounded bg-white px-2 py-1 font-semibold text-gray-900 drop-shadow-sm"
 												required
 												{...register('repeat', { required: true })}
+											/>
+										</div>
+										<div className="flex items-center gap-x-2 gap-y-1 lg:flex-col lg:items-start">
+											<label className="whitespace-nowrap text-lg font-semibold leading-5">
+												Price:
+											</label>
+											<input
+												type="number"
+												min={0}
+												step="0.01"
+												defaultValue={10}
+												className="h-9 w-full rounded bg-white px-2 py-1 font-semibold text-gray-900 drop-shadow-sm"
+												required
+												{...register('price', { required: true })}
 											/>
 										</div>
 										<label className="flex items-center gap-x-2 gap-y-1 whitespace-nowrap text-lg font-semibold leading-5 lg:flex-col lg:items-start">

@@ -55,7 +55,12 @@ const Purchase = () => {
 					<div className="flex flex-col items-center gap-x-4 px-4 py-2 md:flex-row">
 						<p className="font-semibold">Selected Seats : </p>
 						<p className="text-start">{selectedSeats.join(', ')}</p>
-						{!!selectedSeats.length && <p className="whitespace-nowrap">({selectedSeats.length} seats)</p>}
+						{!!selectedSeats.length && (
+							<>
+								<p className="whitespace-nowrap">({selectedSeats.length} seats)</p>
+								<p className="whitespace-nowrap font-semibold">Total: ${(showtime.price * selectedSeats.length).toFixed(2)}</p>
+							</>
+						)}
 					</div>
 					{!!selectedSeats.length && (
 						<button

@@ -4,6 +4,7 @@ const showtimeSchema = new mongoose.Schema({
 	theater: { type: mongoose.Schema.ObjectId, ref: 'Theater' },
 	movie: { type: mongoose.Schema.ObjectId, ref: 'Movie' },
 	showtime: Date,
+	price: { type: Number, required: [true, 'Please add a ticket price'], default: 10 },
 	seats: [
 		{
 			row: { type: String, required: [true, 'Please add a seat row'] },
