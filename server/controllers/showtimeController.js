@@ -95,7 +95,7 @@ exports.getShowtimeWithUser = async (req, res, next) => {
 //@access   Private
 exports.addShowtime = async (req, res, next) => {
 	try {
-		const { movie: movieId, showtime: showtimeString, theater: theaterId, repeat = 1, isRelease } = req.body
+		const { movie: movieId, showtime: showtimeString, theater: theaterId, repeat = 1, isRelease = true, price } = req.body
 
 		if (repeat > 31 || repeat < 1) {
 			return res.status(400).json({ success: false, message: `Repeat is not a valid number between 1 to 31` })
@@ -118,7 +118,13 @@ exports.addShowtime = async (req, res, next) => {
 		}
 
 		for (let i = 0; i < repeat; i++) {
-			const showtimeDoc = await Showtime.create({ theater, movie: movie._id, showtime, isRelease })
+			const showtimeDoc = await Showtime.create({ 
+				theater, 
+				movie: movie._id, 
+				showtime, 
+				isRelease,
+				price: parseFloat(price)
+			})
 
 			showtimeIds.push(showtimeDoc._id)
 			showtimes.push(new Date(showtime))

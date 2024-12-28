@@ -142,7 +142,7 @@ exports.getAll = async (req, res, next) => {
 				'movie',
 				{ path: 'theater', populate: { path: 'cinema', select: 'name' }, select: 'cinema number' }
 			],
-			select: 'theater movie showtime isRelease'
+			select: 'theater movie showtime isRelease price'
 		})
 
 		res.status(200).json({

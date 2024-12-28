@@ -12,7 +12,7 @@ const showtimeSchema = new mongoose.Schema({
 			user: { type: mongoose.Schema.ObjectId, ref: 'User' }
 		}
 	],
-	isRelease: Boolean
+	isRelease: { type: Boolean, default: true }
 })
 
 showtimeSchema.pre('deleteOne', { document: true, query: true }, async function (next) {
