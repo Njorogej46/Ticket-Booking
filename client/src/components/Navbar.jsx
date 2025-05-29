@@ -90,15 +90,7 @@ const Navbar = () => {
 							<p>Ticket</p>
 						</Link>
 					)}
-					<a
-						href="http://localhost:8000"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="flex items-center justify-center gap-2 rounded-md bg-gray-600 px-2 py-1 text-white hover:bg-gray-500"
-					>
-						<ChatBubbleLeftRightIcon className="h-6 w-6" />
-						<p>Reviews & Forums</p>
-					</a>
+ 
 					{auth.role === 'admin' && (
 						<>
 							<Link
