@@ -52,7 +52,7 @@ const Purchase = () => {
 				autoClose: 2000,
 				pauseOnHover: false
 			})
-			navigate('/ticket')
+			navigate('/tickets')
 		} catch (error) {
 			console.error(error)
 			toast.error(error.response.data.message || 'Error', {
