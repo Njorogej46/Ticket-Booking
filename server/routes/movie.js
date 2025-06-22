@@ -6,13 +6,17 @@ const {
 	updateMovie,
 	deleteMovie,
 	getShowingMovies,
-	getUnreleasedShowingMovies
+	getUnreleasedShowingMovies,
+	createMovieFromOMDB,
+	searchMovieFromOMDB
 } = require('../controllers/movieController')
 const router = express.Router()
 
 const { protect, authorize } = require('../middleware/auth')
 
 router.route('/').get(getMovies).post(protect, authorize('admin'), createMovie)
+router.route('/omdb').post(protect, authorize('admin'), createMovieFromOMDB)
+router.route('/omdb/search').get(protect, authorize('admin'), searchMovieFromOMDB)
 router.route('/showing').get(getShowingMovies)
 router.route('/unreleased/showing').get(protect, authorize('admin'), getUnreleasedShowingMovies)
 router

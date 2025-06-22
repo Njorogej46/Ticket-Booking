@@ -17,10 +17,19 @@ const Movie = () => {
 		watch,
 		formState: { errors }
 	} = useForm()
+	const {
+		register: registerOMDB,
+		handleSubmit: handleSubmitOMDB,
+		reset: resetOMDB,
+		formState: { errors: errorsOMDB }
+	} = useForm()
 
 	const [movies, setMovies] = useState([])
 	const [isFetchingMoviesDone, setIsFetchingMoviesDone] = useState(false)
 	const [isAddingMovie, SetIsAddingMovie] = useState(false)
+	const [moviePreview, setMoviePreview] = useState(null)
+	const [isSearching, setIsSearching] = useState(false)
+	const [movieIsExisting, setMovieIsExisting] = useState(false)
 
 	const fetchMovies = async (data) => {
 		try {
@@ -59,6 +68,66 @@ const Movie = () => {
 		} catch (error) {
 			console.error(error)
 			toast.error('Error', {
+				position: 'top-center',
+				autoClose: 2000,
+				pauseOnHover: false
+			})
+		} finally {
+			SetIsAddingMovie(false)
+		}
+	}
+
+	const onSearchMovieFromOMDB = async (data) => {
+		try {
+			setIsSearching(true)
+			setMoviePreview(null)
+			setMovieIsExisting(false)
+			const response = await axios.get(`/movie/omdb/search?title=${data.title}`, {
+				headers: {
+					Authorization: `Bearer ${auth.token}`
+				}
+			})
+			setMoviePreview(response.data.data)
+			setMovieIsExisting(response.data.isExisting)
+			resetOMDB()
+		} catch (error) {
+			console.error(error)
+			const errorMessage = error.response?.data?.message || 'Error searching movie'
+			toast.error(errorMessage, {
+				position: 'top-center',
+				autoClose: 2000,
+				pauseOnHover: false
+			})
+		} finally {
+			setIsSearching(false)
+		}
+	}
+
+	const onConfirmAddMovie = async () => {
+		if (!moviePreview) return
+
+		try {
+			SetIsAddingMovie(true)
+			await axios.post(
+				'/movie/omdb',
+				{ title: moviePreview.Title },
+				{
+					headers: {
+						Authorization: `Bearer ${auth.token}`
+					}
+				}
+			)
+			setMoviePreview(null)
+			fetchMovies()
+			toast.success('Add movie from OMDB successful!', {
+				position: 'top-center',
+				autoClose: 2000,
+				pauseOnHover: false
+			})
+		} catch (error) {
+			console.error(error)
+			const errorMessage = error.response?.data?.message || 'Error'
+			toast.error(errorMessage, {
 				position: 'top-center',
 				autoClose: 2000,
 				pauseOnHover: false
@@ -113,11 +182,102 @@ const Movie = () => {
 			<div className="mx-4 flex h-fit flex-col gap-4 rounded-md bg-gradient-to-br from-indigo-200 to-blue-100 p-4 drop-shadow-xl sm:mx-8 sm:p-6">
 				<h2 className="text-3xl font-bold text-gray-900">Movie Lists</h2>
 				<form
+					onSubmit={handleSubmitOMDB(onSearchMovieFromOMDB)}
+					className="flex flex-col items-stretch justify-end gap-x-4 gap-y-2 rounded-md bg-gradient-to-br from-indigo-100 to-white p-4 drop-shadow-md lg:flex-row"
+				>
+					<div className="flex w-full grow flex-col flex-wrap justify-start gap-4 lg:w-auto">
+						<h3 className="text-xl font-bold">Add Movie From OMDB</h3>
+						<div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+							<label className="text-lg font-semibold leading-5">Name :</label>
+							<input
+								type="text"
+								required
+								className="w-full flex-grow rounded px-3 py-1 font-semibold drop-shadow-sm sm:w-auto"
+								{...registerOMDB('title', {
+									required: true
+								})}
+							/>
+						</div>
+					</div>
+					<div className="flex w-full flex-col gap-4 lg:w-auto lg:flex-row">
+						<button
+							className="w-full min-w-fit items-center rounded-md bg-gradient-to-br from-indigo-600 to-blue-500 px-2 py-1 text-center font-medium text-white drop-shadow-md hover:from-indigo-500 hover:to-blue-500 disabled:from-slate-500 disabled:to-slate-400 lg:w-24 xl:w-32 xl:text-xl"
+							type="submit"
+							disabled={isSearching}
+						>
+							{isSearching ? 'Searching...' : 'Search'}
+						</button>
+					</div>
+				</form>
+				{isSearching && <Loading />}
+				{moviePreview && !isSearching && (
+					<div className="flex flex-col items-stretch justify-end gap-x-4 gap-y-2 rounded-md bg-gradient-to-br from-indigo-100 to-white p-4 drop-shadow-md lg:flex-row">
+						<div className="flex w-full grow flex-col flex-wrap justify-start gap-4 lg:w-auto">
+							<h3 className="text-xl font-bold">Movie Preview</h3>
+							<div>
+								<p>
+									<strong>Title:</strong> {moviePreview.Title}
+								</p>
+								<p>
+									<strong>Year:</strong> {moviePreview.Year}
+								</p>
+								<p>
+									<strong>Rated:</strong> {moviePreview.Rated}
+								</p>
+								<p>
+									<strong>Released:</strong> {moviePreview.Released}
+								</p>
+								<p>
+									<strong>Runtime:</strong> {moviePreview.Runtime}
+								</p>
+								<p>
+									<strong>Genre:</strong> {moviePreview.Genre}
+								</p>
+								<p>
+									<strong>Director:</strong> {moviePreview.Director}
+								</p>
+								<p>
+									<strong>Writer:</strong> {moviePreview.Writer}
+								</p>
+								<p>
+									<strong>Actors:</strong> {moviePreview.Actors}
+								</p>
+								<p>
+									<strong>Plot:</strong> {moviePreview.Plot}
+								</p>
+							</div>
+						</div>
+						<div className="flex w-full flex-col items-center justify-center gap-4 lg:w-auto lg:flex-row">
+							{moviePreview.Poster !== 'N/A' && (
+								<img
+									src={moviePreview.Poster}
+									className="h-48 rounded-md object-contain drop-shadow-md lg:h-64"
+								/>
+							)}
+							<div className="flex flex-col gap-2">
+								<button
+									onClick={onConfirmAddMovie}
+									className="w-full min-w-fit items-center rounded-md bg-gradient-to-br from-indigo-600 to-blue-500 px-2 py-1 text-center font-medium text-white drop-shadow-md hover:from-indigo-500 hover:to-blue-500 disabled:from-slate-500 disabled:to-slate-400 lg:w-24 xl:w-32 xl:text-xl"
+									disabled={isAddingMovie || movieIsExisting}
+								>
+									{isAddingMovie ? 'Adding...' : movieIsExisting ? 'Existing' : 'Add Movie'}
+								</button>
+								<button
+									onClick={() => setMoviePreview(null)}
+									className="w-full min-w-fit items-center rounded-md bg-gradient-to-br from-red-600 to-red-500 px-2 py-1 text-center font-medium text-white drop-shadow-md hover:from-red-500 hover:to-red-500 disabled:from-slate-500 disabled:to-slate-400 lg:w-24 xl:w-32 xl:text-xl"
+								>
+									Cancel
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
+				<form
 					onSubmit={handleSubmit(onAddMovie)}
 					className="flex flex-col items-stretch justify-end gap-x-4 gap-y-2 rounded-md bg-gradient-to-br from-indigo-100 to-white p-4 drop-shadow-md lg:flex-row"
 				>
 					<div className="flex w-full grow flex-col flex-wrap justify-start gap-4 lg:w-auto">
-						<h3 className="text-xl font-bold">Add Movie</h3>
+						<h3 className="text-xl font-bold">Add Movie Manually</h3>
 						<div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
 							<label className="text-lg font-semibold leading-5">Name :</label>
 							<input

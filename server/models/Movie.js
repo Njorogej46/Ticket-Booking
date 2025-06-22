@@ -15,6 +15,60 @@ const movieSchema = new mongoose.Schema(
 			type: String,
 			required: [true, 'Please add a movie img'],
 			trim: true
+		},
+		plot: {
+			type: String
+		},
+		rated: {
+			type: String
+		},
+		released: {
+			type: Date
+		},
+		genre: {
+			type: String
+		},
+		director: {
+			type: String
+		},
+		writer: {
+			type: String
+		},
+		actors: {
+			type: String
+		},
+		language: {
+			type: String
+		},
+		country: {
+			type: String
+		},
+		awards: {
+			type: String
+		},
+		imdbRating: {
+			type: String
+		},
+		imdbID: {
+			type: String,
+			unique: true
+		},
+		boxOffice: {
+			type: String
+		},
+		production: {
+			type: String
+		},
+		year: {
+			type: String
+		},
+		ratings: {
+			type: [
+				{
+					Source: String,
+					Value: String
+				}
+			]
 		}
 	},
 	{ timestamps: true }
