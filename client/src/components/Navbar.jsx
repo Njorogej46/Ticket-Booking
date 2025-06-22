@@ -67,6 +67,17 @@ const Navbar = () => {
 						<p>Cinema</p>
 					</Link>
 					<Link
+						to={'/movies'}
+						className={`flex items-center justify-center gap-2 rounded-md px-2 py-1 text-white hover:bg-gray-500 ${
+							window.location.pathname === '/movies'
+								? 'bg-gradient-to-br from-indigo-800 to-blue-700'
+								: 'bg-gray-600'
+						}`}
+					>
+						<FilmIcon className="h-6 w-6" />
+						<p>All Movies</p>
+					</Link>
+					<Link
 						to={'/schedule'}
 						className={`flex items-center justify-center gap-2 rounded-md px-2 py-1 text-white hover:bg-gray-500 ${
 							window.location.pathname === '/schedule'

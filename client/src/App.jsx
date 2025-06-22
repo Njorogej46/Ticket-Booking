@@ -6,6 +6,7 @@ import Cinema from './pages/Cinema'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Movie from './pages/Movie'
+import PageNotFound from './pages/PageNotFound'
 import Purchase from './pages/Purchase'
 import Register from './pages/Register'
 import Schedule from './pages/Schedule'
@@ -13,6 +14,8 @@ import Search from './pages/Search'
 import Showtime from './pages/Showtime'
 import Tickets from './pages/Tickets'
 import User from './pages/User'
+import AllMovies from './pages/AllMovies'
+import MovieInfo from './pages/MovieInfo'
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL || 'http://localhost:8080'
 axios.defaults.withCredentials = true
@@ -54,6 +57,9 @@ function App() {
 						</AdminRoute>
 					}
 				/>
+				<Route path="/movies" element={<AllMovies />} />
+				<Route path="/movies/:id" element={<MovieInfo />} />
+				<Route path="*" element={<PageNotFound />} />
 			</Routes>
 		</>
 	)

@@ -293,3 +293,25 @@ exports.deletePreviousShowtime = async (req, res, next) => {
 		res.status(400).json({ success: false, message: err })
 	}
 }
+
+//@desc     GET all showtimes for a specific movie
+//@route    GET /showtime/movie/:id
+//@access   Public
+exports.getShowtimesByMovie = async (req, res, next) => {
+	try {
+		const showtimes = await Showtime.find({ movie: req.params.id })
+			.populate({
+				path: 'theater',
+				select: 'number cinema',
+				populate: {
+					path: 'cinema',
+					select: 'name'
+				}
+			})
+			.sort({ showtime: 1 })
+
+		res.status(200).json({ success: true, count: showtimes.length, data: showtimes })
+	} catch (err) {
+		res.status(400).json({ success: false, message: err })
+	}
+}
