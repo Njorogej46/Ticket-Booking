@@ -16,6 +16,7 @@ import Tickets from './pages/Tickets'
 import User from './pages/User'
 import AllMovies from './pages/AllMovies'
 import MovieInfo from './pages/MovieInfo'
+import Coupons from './pages/Coupons'
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL || 'http://localhost:8080'
 axios.defaults.withCredentials = true
@@ -54,6 +55,14 @@ function App() {
 					element={
 						<AdminRoute>
 							<User />
+						</AdminRoute>
+					}
+				/>
+				<Route
+					path="/coupons"
+					element={
+						<AdminRoute>
+							<Coupons />
 						</AdminRoute>
 					}
 				/>
