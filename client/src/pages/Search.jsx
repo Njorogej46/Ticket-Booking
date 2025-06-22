@@ -612,37 +612,39 @@ const Search = () => {
 									/>
 								</div>
 							</div>
-							<div className="flex flex-col">
-								<h4 className="pt-1 text-lg font-bold text-gray-800">Release :</h4>
-								<div className="mt-1 flex flex-col items-start gap-x-8 gap-y-2 sm:flex-row sm:items-center">
-									<label className="text-md flex items-center justify-between gap-2 font-semibold text-gray-800">
-										True
-										<input
-											type="checkbox"
-											className="h-6 w-6"
-											checked={filterReleaseTrue}
-											onClick={(event) => {
-												setFilterReleaseTrue(event.target.checked)
-												setFilterReleaseFalse(false)
-												resetState()
-											}}
-										/>
-									</label>
-									<label className="text-md flex items-center justify-between gap-2 font-semibold text-gray-800">
-										False
-										<input
-											type="checkbox"
-											className="h-6 w-6"
-											checked={filterReleaseFalse}
-											onClick={(event) => {
-												setFilterReleaseTrue(false)
-												setFilterReleaseFalse(event.target.checked)
-												resetState()
-											}}
-										/>
-									</label>
+							{auth.role === 'admin' && (
+								<div className="flex flex-col">
+									<h4 className="pt-1 text-lg font-bold text-gray-800">Release :</h4>
+									<div className="mt-1 flex flex-col items-start gap-x-8 gap-y-2 sm:flex-row sm:items-center">
+										<label className="text-md flex items-center justify-between gap-2 font-semibold text-gray-800">
+											True
+											<input
+												type="checkbox"
+												className="h-6 w-6"
+												checked={filterReleaseTrue}
+												onClick={(event) => {
+													setFilterReleaseTrue(event.target.checked)
+													setFilterReleaseFalse(false)
+													resetState()
+												}}
+											/>
+										</label>
+										<label className="text-md flex items-center justify-between gap-2 font-semibold text-gray-800">
+											False
+											<input
+												type="checkbox"
+												className="h-6 w-6"
+												checked={filterReleaseFalse}
+												onClick={(event) => {
+													setFilterReleaseTrue(false)
+													setFilterReleaseFalse(event.target.checked)
+													resetState()
+												}}
+											/>
+										</label>
+									</div>
 								</div>
-							</div>
+							)}
 						</div>
 					)}
 				</div>

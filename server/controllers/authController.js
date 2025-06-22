@@ -90,26 +90,36 @@ exports.getMe = async (req, res, next) => {
 	}
 }
 
-//@desc		Get user's tickets
-//@route 	POST /auth/tickets
+//@desc		Get tickets
+//@route	GET /auth/tickets
 //@access	Private
 exports.getTickets = async (req, res, next) => {
 	try {
-		const user = await User.findById(req.user.id, { tickets: 1 }).populate({
-			path: 'tickets.showtime',
+		const user = await User.findById(req.user.id).populate({
+			path: 'tickets',
 			populate: [
-				'movie',
-				{ path: 'theater', populate: { path: 'cinema', select: 'name' }, select: 'cinema number' }
-			],
-			select: 'theater movie showtime isRelease price'
+				{
+					path: 'showtime',
+					populate: [
+						{
+							path: 'movie'
+						},
+						{
+							path: 'theater',
+							populate: {
+								path: 'cinema'
+							}
+						}
+					]
+				},
+				{
+					path: 'coupon'
+				}
+			]
 		})
-
-		res.status(200).json({
-			success: true,
-			data: user
-		})
+		res.status(200).json({ success: true, data: user })
 	} catch (err) {
-		res.status(400).json({ success: false, message: err })
+		res.status(400).json({ success: false, message: err.message })
 	}
 }
 

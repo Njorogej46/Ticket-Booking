@@ -105,7 +105,14 @@ const Showtime = () => {
 								{!isPast && <p className="font-semibold">Selected Seats : </p>}
 								<p className="text-start">{sortedSelectedSeat.join(', ')}</p>
 								{!!selectedSeats.length && (
-									<p className="whitespace-nowrap">({selectedSeats.length} seats)</p>
+									<>
+										<p className="whitespace-nowrap">({selectedSeats.length} seats)</p>
+										{showtime.price && (
+											<p className="whitespace-nowrap font-semibold">
+												Total: ${(showtime.price * selectedSeats.length).toFixed(2)}
+											</p>
+										)}
+									</>
 								)}
 							</div>
 							{!!selectedSeats.length && (

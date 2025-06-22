@@ -2,6 +2,8 @@ const Movie = require('../models/Movie')
 const Showtime = require('../models/Showtime')
 const Theater = require('../models/Theater')
 const User = require('../models/User')
+const Coupon = require('../models/Coupon')
+const Ticket = require('../models/Ticket')
 
 //@desc     GET showtimes
 //@route    GET /showtime
@@ -149,7 +151,7 @@ exports.addShowtime = async (req, res, next) => {
 //@access   Private
 exports.purchase = async (req, res, next) => {
 	try {
-		const { seats } = req.body
+		const { seats, couponCode } = req.body
 		const user = req.user
 
 		const showtime = await Showtime.findById(req.params.id).populate({ path: 'theater', select: 'seatPlan' })
@@ -183,26 +185,70 @@ exports.purchase = async (req, res, next) => {
 			return res.status(400).json({ success: false, message: 'Seat not available' })
 		}
 
+		let totalPrice = showtime.price * seats.length
+		let coupon = null
+
+		if (couponCode) {
+			coupon = await Coupon.findOne({
+				code: couponCode.toUpperCase(),
+				isActive: true,
+				validUntil: { $gte: new Date() }
+			})
+
+			if (coupon) {
+				totalPrice = totalPrice * (1 - coupon.discountPercentage / 100)
+			} else {
+				return res.status(400).json({ success: false, message: 'Invalid or expired coupon code.' })
+			}
+		}
+
 		const seatUpdates = seats.map((seatNumber) => {
 			const [row, number] = seatNumber.match(/([A-Za-z]+)(\d+)/).slice(1)
 			return { row, number: parseInt(number, 10), user: user._id }
 		})
 
 		showtime.seats.push(...seatUpdates)
-		const updatedShowtime = await showtime.save()
+		await showtime.save()
 
-		const updatedUser = await User.findByIdAndUpdate(
-			user._id,
-			{
-				$push: { tickets: { showtime, seats: seatUpdates } }
-			},
-			{ new: true }
-		)
+		const ticket = await Ticket.create({
+			showtime: showtime._id,
+			seats: seatUpdates.map((s) => ({ row: s.row, number: s.number })),
+			user: user._id,
+			totalPrice,
+			coupon: coupon ? coupon._id : null
+		})
 
-		res.status(200).json({ success: true, data: updatedShowtime, updatedUser })
+		await User.findByIdAndUpdate(user._id, {
+			$push: { tickets: ticket._id }
+		})
+
+		const updatedUser = await User.findById(user._id).populate({
+			path: 'tickets',
+			populate: [
+				{
+					path: 'showtime',
+					populate: [
+						{
+							path: 'movie'
+						},
+						{
+							path: 'theater',
+							populate: {
+								path: 'cinema'
+							}
+						}
+					]
+				},
+				{
+					path: 'coupon'
+				}
+			]
+		})
+
+		res.status(200).json({ success: true, data: updatedUser.tickets })
 	} catch (err) {
 		console.log(err)
-		res.status(400).json({ success: false, message: err })
+		res.status(400).json({ success: false, message: err.message })
 	}
 }
 

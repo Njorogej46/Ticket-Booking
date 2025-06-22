@@ -59,4 +59,25 @@ exports.deleteCoupon = async (req, res, next) => {
 	} catch (err) {
 		res.status(400).json({ success: false, message: err.message })
 	}
+}
+
+//@desc     Validate a coupon
+//@route    GET /coupon/validate/:code
+//@access   Private
+exports.validateCoupon = async (req, res, next) => {
+	try {
+		const coupon = await Coupon.findOne({
+			code: req.params.code.toUpperCase(),
+			isActive: true,
+			validUntil: { $gte: new Date() }
+		})
+
+		if (!coupon) {
+			return res.status(404).json({ success: false, message: 'Invalid or expired coupon code' })
+		}
+
+		res.status(200).json({ success: true, data: coupon })
+	} catch (err) {
+		res.status(400).json({ success: false, message: err.message })
+	}
 } 

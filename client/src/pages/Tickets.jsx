@@ -10,29 +10,30 @@ import { PrinterIcon } from '@heroicons/react/24/outline'
 const Tickets = () => {
 	const { auth } = useContext(AuthContext)
 	const [tickets, setTickets] = useState([])
-	const [isFetchingticketsDone, setIsFetchingticketsDone] = useState(false)
+	const [isFetchingTicketsDone, setIsFetchingTicketsDone] = useState(false)
 	const [selectedTicketForPrint, setSelectedTicketForPrint] = useState(null)
 
 	const fetchTickets = async () => {
 		try {
-			setIsFetchingticketsDone(false)
+			setIsFetchingTicketsDone(false)
 			const response = await axios.get('/auth/tickets', {
 				headers: {
 					Authorization: `Bearer ${auth.token}`
 				}
 			})
+			const userTickets = response.data.data.tickets || []
 			setTickets(
-				response.data.data.tickets?.sort((a, b) => {
+				userTickets.sort((a, b) => {
 					if (a.showtime.showtime > b.showtime.showtime) {
-						return 1
+						return -1
 					}
-					return -1
+					return 1
 				})
 			)
 		} catch (error) {
 			console.error(error)
 		} finally {
-			setIsFetchingticketsDone(true)
+			setIsFetchingTicketsDone(true)
 		}
 	}
 
@@ -54,13 +55,14 @@ const Tickets = () => {
 				<Navbar />
 				<div className="mx-4 flex h-fit flex-col gap-4 rounded-md bg-gradient-to-br from-indigo-200 to-blue-100 p-4 drop-shadow-xl sm:mx-8 sm:p-6">
 					<h2 className="text-3xl font-bold text-gray-900">My Tickets</h2>
-					{isFetchingticketsDone ? (
+					{isFetchingTicketsDone ? (
 						<>
 							{tickets.length === 0 ? (
 								<p className="text-center">You have not purchased any tickets yet</p>
 							) : (
 								<div className="grid grid-cols-1 gap-4 xl:grid-cols-2 min-[1920px]:grid-cols-3">
 									{tickets.map((ticket, index) => {
+										const originalPrice = ticket.showtime.price * ticket.seats.length
 										return (
 											<div className="flex flex-col" key={index}>
 												<ShowtimeDetails showtime={ticket.showtime} />
@@ -71,18 +73,20 @@ const Tickets = () => {
 															{ticket.seats.map((seat) => seat.row + seat.number).join(', ')}
 														</p>
 														<p className="whitespace-nowrap">({ticket.seats.length} seats)</p>
-														<div className="flex gap-x-2">
-															{ticket.showtime.price ? (
+														<div className="flex flex-col items-start gap-x-2">
+															{ticket.coupon ? (
 																<>
-																	<p className="whitespace-nowrap">Price: ${ticket.showtime.price.toFixed(2)}/ticket</p>
-																	{ticket.seats.length > 1 && (
-																		<p className="whitespace-nowrap font-semibold">
-																			Total: ${(ticket.showtime.price * ticket.seats.length).toFixed(2)}
-																		</p>
-																	)}
+																	<p className="text-sm line-through">
+																		Original: ${originalPrice.toFixed(2)}
+																	</p>
+																	<p className="whitespace-nowrap font-semibold">
+																		Total: ${ticket.totalPrice.toFixed(2)} ({ticket.coupon.discountPercentage}% off)
+																	</p>
 																</>
 															) : (
-																<p className="whitespace-nowrap">Price not set</p>
+																<p className="whitespace-nowrap font-semibold">
+																	Total: ${originalPrice.toFixed(2)}
+																</p>
 															)}
 														</div>
 													</div>

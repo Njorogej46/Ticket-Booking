@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
 	role: {
 		type: String,
 		enum: ['user', 'admin'],
-		defalut: 'user'
+		defalut: 'user',
+		required: [true, 'Please add a role']
 	},
 	password: {
 		type: String,
@@ -30,19 +31,16 @@ const userSchema = new mongoose.Schema({
 	},
 	tickets: [
 		{
-			showtime: { type: mongoose.Schema.ObjectId, ref: 'Showtime' },
-			seats: [
-				{
-					row: { type: String },
-					number: { type: Number }
-				}
-			]
+			type: mongoose.Schema.ObjectId,
+			ref: 'Ticket'
 		}
 	],
 	createdAt: {
 		type: Date,
 		default: Date.now
 	}
+}, {
+	timestamps: true
 })
 
 //Encrypt password using bcrypt
