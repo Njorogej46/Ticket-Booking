@@ -65,7 +65,7 @@ const Navbar = () => {
 						}`}
 					>
 						<HomeModernIcon className="h-6 w-6" />
-						<p>Cinema</p>
+						<p>Home</p>
 					</Link>
 					<Link
 						to={'/movies'}
@@ -87,7 +87,7 @@ const Navbar = () => {
 						}`}
 					>
 						<ClockIcon className="h-6 w-6" />
-						<p>Schedule</p>
+						<p>Showtimes</p>
 					</Link>
 					{auth.role && (
 						<Link
@@ -177,10 +177,7 @@ const Navbar = () => {
 	return (
 		<nav className="flex flex-col items-center justify-between gap-2 bg-gray-900 px-4 py-3 drop-shadow-lg lg:flex-row lg:justify-start sm:px-8">
 			<div className="flex w-full flex-row justify-between lg:w-fit">
-				<button className="flex flex-row items-center gap-2" onClick={() => navigate('/')}>
-					<FilmIcon className="h-8 w-8 text-white" />
-					<h1 className="mr-2 text-xl text-white">Cinema</h1>
-				</button>
+ 
 				<button
 					className="flex h-8 w-8 items-center justify-center rounded hover:bg-gray-700 lg:hidden"
 					onClick={() => toggleMenu()}
